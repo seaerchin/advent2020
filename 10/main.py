@@ -17,9 +17,17 @@ def get_diffs(ls):
         dp[diff] += 1 
     return dp
 
+def combinations(ls): 
+    dp = [0 for _ in range(max(ls) + 1)]
+    dp[0] = 1 
+    for i in sorted(ls[1:]):
+        for j in range(1, 4): 
+            dp[i] += dp[i - j]
+    return dp[max(ls)]
+
 if __name__ == "__main__":
     with open("data.txt", "r") as f:
         input = list(map(int, f.read().splitlines()))
         ls = chained(input)
         dp = get_diffs(ls)
-        print(dp[3] * dp[1])
+        print(combinations(ls))
