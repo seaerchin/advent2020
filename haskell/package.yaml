@@ -21,6 +21,8 @@ description:         Please see the README on GitHub at <https://github.com/gith
 
 dependencies:
 - base >= 4.7 && < 5
+- containers
+- split
 
 library:
   source-dirs: src
@@ -32,7 +34,15 @@ executables:
     ghc-options:
     - -threaded
     - -rtsopts
+    - -fwarn-incomplete-patterns
     - -with-rtsopts=-N
+    - -Wincomplete-uni-patterns
+    - -Wincomplete-record-updates
+    - -Wmissing-home-modules
+    - -Widentities
+    - -Wredundant-constraints
+    - -Wpartial-fields
+    - -Wall
     dependencies:
     - haskell
 

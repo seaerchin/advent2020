@@ -1,6 +1,5 @@
 module Main where
-
-import Lib
+import Four.Four
 
 main :: IO ()
-main = someFunc
+main = driver
