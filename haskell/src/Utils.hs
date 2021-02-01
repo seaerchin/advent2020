@@ -1,6 +1,8 @@
 module Utils where
 
 import Text.Read
+import Text.Parsec hiding (count, parse, uncons)
+import qualified Text.Parsec as Parsec 
 
 -- getInput reads from a file path and returns the output as a list of strings 
 getInput :: FilePath -> IO [String]
@@ -21,3 +23,13 @@ readTill c s = readTill' c s ""
         readTill' c (first: rest) readString 
             | c == first = (readString, rest)
             | otherwise = readTill' c rest (readString ++ [first])
+
+-- from haskelling day 7
+type Parser = Parsec String ()
+
+parse :: Parser a 
+    -> String 
+    -> Either ParseError a 
+
+parse p = Parsec.parse p ""
+

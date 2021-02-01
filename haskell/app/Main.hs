@@ -1,5 +1,5 @@
 module Main where
-import Four.Four
+import Eight.Eight
 
 main :: IO ()
 main = driver

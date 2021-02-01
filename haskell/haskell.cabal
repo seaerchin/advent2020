@@ -4,7 +4,7 @@ cabal-version: 1.12
 --
 -- see: https://github.com/sol/hpack
 --
--- hash: 9fc2a625050e26e259eefd5d393a5f6dbde2271caac7ad2de7cf1b8a9c0aa1f7
+-- hash: 4af43123c849e43f4ab11e51da4828852110997a8bf37f9363753800afee2b1a
 
 name:           haskell
 version:        0.1.0.0
@@ -27,9 +27,13 @@ source-repository head
 
 library
   exposed-modules:
+      Eight.Eight
+      Five.Five
       Four.Four
       Lib
       One.One
+      Seven.Seven
+      Six.Six
       Three.Three
       Two.Two
       Utils
@@ -40,6 +44,7 @@ library
   build-depends:
       base >=4.7 && <5
     , containers
+    , parsec
     , split
   default-language: Haskell2010
 
@@ -54,6 +59,7 @@ executable haskell-exe
       base >=4.7 && <5
     , containers
     , haskell
+    , parsec
     , split
   default-language: Haskell2010
 
@@ -69,5 +75,6 @@ test-suite haskell-test
       base >=4.7 && <5
     , containers
     , haskell
+    , parsec
     , split
   default-language: Haskell2010
