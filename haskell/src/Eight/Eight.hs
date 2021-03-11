@@ -1,47 +1,72 @@
 module Eight.Eight where
 
-import Utils 
-import Text.Parsec hiding (count, parse, uncons, getInput)
-import qualified Text.Parsec as Parsec 
-import Data.Either ( rights )
+import Data.Either (rights)
 import Data.Map ((!))
 import qualified Data.Map as M
+import Text.Parsec hiding (count, getInput, parse, uncons)
+import qualified Text.Parsec as Parsec
+import Utils
 
-data Sign = Negative | Positive
-data Instruction = NOP | ACC | JMP Sign Int 
+data Sign = Negative | Positive deriving (Show)
 
-driver = do 
-    input <- getInput "data.txt"
-    let parsed = rights $ map (parse instruction) input 
-    print parsed
+data Instruction = NOP Int | ACC Int | JMP Int deriving (Show)
 
-    return ()
+type Executable = [Instruction]
 
--- acc -> ptr -> ... 
-exec :: Int -> Int -> Instruction -> (Int, Int) 
-exec x ptr NOP = (x, ptr) 
-exec x ptr ACC = (x + 1, ptr) 
-exec x ptr (JMP Negative y) = (x, ptr - y)
-exec x ptr (JMP Positive y) = (x, ptr + y)
+type Ptr = Int
 
--- we wrap exec in a map 
+type Acc = Int
+
+driver = do
+  input <- getInput "data.txt"
+  let parsed = rights $ map (parse instruction) input
+      point = wrapped (0, 0) M.empty (map toInstructions parsed)
+  print point
+
+  return ()
+
+generate :: Executable -> [Executable]
+generate = foldl foldingFunction []
+
+-- if the current instruction is a NOP/JMP we can change it
+foldingFunction :: [Executable] -> Instruction -> [Executable]
+foldingFunction = undefined
+
+-- acc -> ptr -> ...
+exec :: Acc -> Ptr -> Instruction -> (Acc, Ptr)
+exec x ptr (NOP _) = (x, ptr + 1)
+exec x ptr (ACC y) = (x + y, ptr + 1)
+exec x ptr (JMP y) = (x, ptr + y)
+
+-- we wrap exec in a map
 -- for every ptr value, we will check if it is executed before
 -- if yes nvm
 -- otherwise, return that value
-wrapped :: (Int, Int) -> M.Map Int Bool -> [Instruction] -> Int
+wrapped :: (Acc, Ptr) -> M.Map Int Bool -> [Instruction] -> (Ptr, Bool)
 wrapped (acc, ptr) m input
-    | ptr `M.member` m = acc 
-    | otherwise = wrapped (acc', ptr') m' input
-        where 
-            (acc', ptr') = exec acc ptr curIns 
-            curIns = input !! ptr
-            m' = M.insert ptr True m
+  | ptr `M.member` m = (acc, False) -- already seen
+  | ptr >= length input = (acc, True) -- not seen and exceeds # of instructions
+  | otherwise = wrapped (acc', ptr') m' input
+  where
+    (acc', ptr') = exec acc ptr curIns
+    curIns = input !! ptr
+    m' = M.insert ptr True m
 
--- an instruction is a series of words then an instruction followed by a sign 
-instruction :: Parser (String, String) 
-instruction = do 
-    instruction <- many1 letter 
-    char ' '
-    sign <- char '+' <|> char '-'
-    nums <- many1 digit
-    return (instruction, sign: nums) 
+toInstructions :: (String, String) -> Instruction
+toInstructions ("nop", '-' : x) = NOP (negate $ read x :: Int)
+toInstructions ("nop", '+' : x) = NOP (read x :: Int)
+toInstructions ("acc", '-' : x) = ACC (negate $ read x :: Int)
+toInstructions ("acc", '+' : x) = ACC (read x :: Int)
+toInstructions ("jmp", '-' : x) = JMP (negate $ read x :: Int)
+toInstructions ("jmp", '+' : x) = JMP (read x :: Int)
+
+-- toInstructions _ = undefined
+
+-- an instruction is a series of words then an instruction followed by a sign
+instruction :: Parser (String, String)
+instruction = do
+  instruction <- many1 letter
+  char ' '
+  sign <- char '+' <|> char '-'
+  nums <- many1 digit
+  return (instruction, sign : nums)
