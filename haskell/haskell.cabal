@@ -4,7 +4,7 @@ cabal-version: 1.12
 --
 -- see: https://github.com/sol/hpack
 --
--- hash: 0bcc4ff136bd48bf452752d9fc62d72eff3bad5c3a74be374074fe72e193ada1
+-- hash: f008a19c13a854fa0013e3819f2bbedf567bfccce6ae4375b6bfba6f9a080985
 
 name:           haskell
 version:        0.1.0.0
@@ -35,6 +35,7 @@ library
       One.One
       Seven.Seven
       Six.Six
+      Ten.Ten
       Three.Three
       Two.Two
       Utils
