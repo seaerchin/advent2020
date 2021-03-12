@@ -1,5 +1,6 @@
 module Ten.Ten where
 
+import Data.Array
 import Data.List
 import Debug.Trace
 import Utils
@@ -9,14 +10,14 @@ driver =
   getInput "data.txt"
     >>= \input ->
       let x = map (\x -> read x :: Int) input
-          res = solve x
+          res = solve2 x
        in print res
 
 solve :: [Int] -> Int
 solve = extract . findDiff . sort
 
 solve2 :: [Int] -> Int
-solve2 = calcWays . findDiff . sort
+solve2 = calcWays . sort
 
 findDiff :: [Int] -> [Int]
 findDiff ls =
@@ -34,9 +35,13 @@ extract ls =
 -- we establish a proof by the following
 -- for any number in range [n + 1, n + 3] where n is the number of interest
 -- n + 1 must include n + 2 and n + 3 by definition
--- hence, we need only consider the biggest number.
--- smallest/second smallest num ways = biggest + 1/biggest + 2.
 calcWays :: [Int] -> Int
-calcWays = go
+calcWays = go [(0, 1)]
   where
-    go (x : xs) = undefined
+    go :: [(Int, Int)] -> [Int] -> Int
+    go memo (x : xs) =
+      case xs of
+        [] -> i
+        _ -> go ((x, i) : memo) xs
+      where
+        i = sum . map snd $ takeWhile (\(y, _) -> x - y <= 3) memo
